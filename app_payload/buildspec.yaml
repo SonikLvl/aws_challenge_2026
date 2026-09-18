@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  build:
+    commands:
+      - echo "Packaging Lambda code..."
+      - zip -r lambda_deployment.zip index.py
+      - echo "Updating Lambda function..."
+      - aws lambda update-function-code --function-name cmtr-9ped0fct-lambda --zip-file fileb://lambda_deployment.zip
