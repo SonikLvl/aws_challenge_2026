@@ -1,35 +1,47 @@
-name: Deploy Website to S3
+name: Deploy to Elastic Beanstalk
 
 on:
   push:
     branches:
+      - task3
       - main
-    paths-ignore:
-      - 'terraform/**'
-      - 'README.md'
-      - '.gitignore'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Create deployment package
+        run: |
+          zip -r deploy.zip application.py requirements.txt
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Sync static files to S3
+      - name: Upload package to S3
         run: |
-          aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
-            --delete \
-            --exclude ".git/*" \
-            --exclude ".github/*" \
-            --exclude "terraform/*" \
-            --exclude "*.md" \
-            --exclude ".gitignore"
+          VERSION_LABEL="deploy-${{ github.sha }}"
+          aws s3 cp deploy.zip s3://${{ secrets.EB_S3_BUCKET }}/$VERSION_LABEL.zip
+
+      - name: Create Elastic Beanstalk Application Version
+        run: |
+          VERSION_LABEL="deploy-${{ github.sha }}"
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ secrets.EB_APP_NAME }}" \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket="${{ secrets.EB_S3_BUCKET }}",S3Key="$VERSION_LABEL.zip"
+
+      - name: Deploy to Elastic Beanstalk Environment
+        run: |
+          VERSION_LABEL="deploy-${{ github.sha }}"
+          aws elasticbeanstalk update-environment \
+            --environment-name "${{ secrets.EB_ENV_NAME }}" \
+            --version-label "$VERSION_LABEL"
