@@ -1,0 +1,29 @@
+# Windows executable & local tooling
+terraform.exe
+*.exe
+
+# Terraform local directories and cache
+.terraform/
+.terraform.lock.hcl
+
+# Terraform state files (contain raw IAM secrets and keys)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Variable definition files with sensitive values
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Crash log files
+crash.log
+crash.*.log
+
+# OS generated files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store
