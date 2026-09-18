@@ -3,48 +3,22 @@ variable "aws_region" {
   default = "eu-west-1"
 }
 
-variable "bucket_name" {
-  type        = string
-  description = "Globally unique S3 bucket name"
+variable "vpc_name" {
+  type = string
 }
 
-variable "github_token" {
-  type        = string
-  sensitive   = true
-  description = "GitHub PAT used by Terraform to create repo and secrets"
+variable "app_name" {
+  type = string
 }
 
-variable "repository_name" {
-  type    = string
-  default = "s3-static-website"
+variable "env_name" {
+  type = string
 }
 
-variable "iam_role_cb" {
-  type        = string
-  description = "Name of the IAM role for CodeBuild"
+variable "eb_service_role_name" {
+  type = string
 }
 
-variable "codebuild_project" {
-  type        = string
-  description = "CodeBuild project name"
-}
-
-variable "lambda_function_trigger" {
-  type        = string
-  description = "Name for the trigger Lambda function"
-}
-
-variable "lambda_function_name" {
-  type        = string
-  description = "Name of the target Lambda function being updated"
-}
-
-variable "iam_role_lambda_cf" {
-  type        = string
-  description = "Pre-created IAM role for the Lambda trigger function"
-}
-
-variable "event_notification_name" {
-  type        = string
-  description = "Name/ID of the S3 event notification"
+variable "eb_instance_profile_name" {
+  type = string
 }
